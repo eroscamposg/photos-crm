@@ -101,7 +101,11 @@ export default async function BookPage({
       : null;
   const times = selectedDate ? (slotsByDate.get(selectedDate) ?? []) : [];
   const selectedTime =
-    params.time && times.includes(params.time) ? params.time : null;
+    params.time &&
+    times.some((slot) => slot.time === params.time && !slot.taken)
+      ? params.time
+      : null;
+
   const prev = addMonths(year, month, -1);
   const next = addMonths(year, month, 1);
   const monthParam = `${year}-${String(month).padStart(2, "0")}`;
@@ -175,17 +179,38 @@ export default async function BookPage({
       </Card>
       {selectedDate ? (
         <div className="flex flex-wrap gap-2">
-          {times.map((time) => (
-            <a
-              key={time}
-              href={query({ date: selectedDate, time })}
-              className={`rounded-full px-4 py-2 text-sm ${time === selectedTime ? "bg-accent text-accent-foreground" : "border border-line bg-card"}`}
-            >
-              {time}
-            </a>
-          ))}
+          {times.map(({ time, taken }) => {
+            const isSelected = time === selectedTime;
+
+            if (taken) {
+              return (
+                <span
+                  key={time}
+                  aria-disabled="true"
+                  className="cursor-not-allowed rounded-full border border-line bg-card px-4 py-2 text-sm opacity-40 line-through"
+                >
+                  {time}
+                </span>
+              );
+            }
+
+            return (
+              <a
+                key={time}
+                href={query({ date: selectedDate, time })}
+                className={`rounded-full px-4 py-2 text-sm ${
+                  isSelected
+                    ? "bg-accent text-accent-foreground"
+                    : "border border-line bg-card"
+                }`}
+              >
+                {time}
+              </a>
+            );
+          })}
         </div>
       ) : null}
+
       {selectedType && selectedDate && selectedTime ? (
         <Card>
           <h2 className="mb-3 font-serif text-2xl">Your details</h2>

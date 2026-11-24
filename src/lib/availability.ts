@@ -16,15 +16,23 @@ export type BusyRange = {
   status: string;
 };
 
+export type TimeSlot = {
+  time: string;
+  taken: boolean;
+};
+
 export function minutes(value: string) {
   const [hours, mins] = value.split(":").map(Number);
   return hours * 60 + mins;
 }
 
-export function fromMinutes(total: number) {
+export function fromMinutes(total: number, overlap: boolean) {
   const hours = Math.floor(total / 60);
   const mins = total % 60;
-  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+  return {
+    time: `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`,
+    taken: overlap ? overlap : false,
+  };
 }
 
 export function weekdayIndex(isoDate: string) {
@@ -73,7 +81,7 @@ export function slotsForDate(options: {
   const taken = options.busy.filter(
     (item) => item.date === options.date && item.status !== "cancelled",
   );
-  const slots: string[] = [];
+  const slots: TimeSlot[] = [];
   for (const window of windows) {
     const start = minutes(window.startTime);
     const end = minutes(window.endTime);
@@ -82,15 +90,14 @@ export function slotsForDate(options: {
       cursor + options.durationMinutes <= end;
       cursor += options.durationMinutes
     ) {
-      // NOTE: Take out this piece of code in order to shown taken daates hours, but shown themgreyed out
+      // NOTE: Taking overlap to show time slot greyed out laters
       const slotEnd = cursor + options.durationMinutes;
       const overlap = taken.some((item) => {
         const busyStart = minutes(item.startTime);
         const busyEnd = minutes(item.endTime);
         return cursor < busyEnd && slotEnd > busyStart;
       });
-      if (!overlap) slots.push(fromMinutes(cursor));
-      slots.push(fromMinutes(cursor));
+      slots.push(fromMinutes(cursor, overlap));
     }
   }
 
