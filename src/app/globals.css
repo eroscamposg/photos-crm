@@ -1,26 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f3efe8;
+  --foreground: #1c1917;
+  --card: #fffdf9;
+  --muted: #78716c;
+  --line: #e4dcd2;
+  --accent: #9a3412;
+  --accent-foreground: #fff7ed;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --font-sans: var(--font-outfit);
+  --font-serif: var(--font-fraunces);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-outfit), "Avenir Next", "Segoe UI", sans-serif;
+}
+
+h1, h2, .font-serif {
+  font-family: var(--font-fraunces), "Iowan Old Style", Palatino, serif;
+}
+
+input, select, textarea, button {
+  font: inherit;
 }

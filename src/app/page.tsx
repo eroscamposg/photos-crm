@@ -1,69 +1,63 @@
-import Image from "next/image";
-
-export default function Home() {
+import Link from "next/link";
+import { getPublicStudio } from "@/lib/studio";
+export const dynamic = "force-dynamic";
+export default async function HomePage() {
+  let studioName = "Atelier North";
+  let tagline = "Portraits, families, and the quiet hours between.";
+  let databaseReady = true;
+  try {
+    const studio = await getPublicStudio();
+    if (studio) {
+      studioName = studio.name;
+      tagline = studio.tagline || tagline;
+    }
+  } catch {
+    databaseReady = false;
+  }
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-25"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/6 px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/8">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="mx-auto flex min-h-screen max-w-5xl flex-col justify-between px-6 py-10">
+      <header className="flex items-center justify-between text-sm">
+        <span className="font-serif text-xl">{studioName}</span>
+        <nav className="flex gap-4">
+          <Link href="/portfolio">Portfolio</Link>
+          <Link href="/book">Book</Link>
+          <Link href="/login">Staff</Link>
+        </nav>
+      </header>
+      <section className="max-w-2xl py-20">
+        <p className="text-xs uppercase tracking-[0.22em] text-muted">
+          Photographer studio
+        </p>
+        <h1 className="mt-4 font-serif text-6xl leading-[0.95]">{tagline}</h1>
+        <p className="mt-6 max-w-xl text-lg text-stone-700">
+          A working desk for one studio: the public portfolio, open dates, and
+          private galleries clients can open without an account.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            href="/portfolio"
+            className="rounded-full bg-accent px-5 py-3 text-sm text-accent-foreground"
+          >
+            View the work
+          </Link>
+          <Link
+            href="/book"
+            className="rounded-full border border-line bg-card px-5 py-3 text-sm"
+          >
+            Request a session
+          </Link>
+        </div>
+        {databaseReady ? null : (
+          <p className="mt-6 text-sm text-amber-900">
+            The database is not reachable yet. Start Postgres, then run
+            migrations and the seed.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-3.5 w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        )}
+      </section>
+      <footer className="flex justify-between text-sm text-muted">
+        <span>Health at /api/health</span>
+        <Link href="/dashboard">Studio desk</Link>
+      </footer>
+    </main>
   );
 }
